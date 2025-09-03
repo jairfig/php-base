@@ -1,61 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ambiente Docker para aplicações Laravel.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto configura um ambiente local com um banco de dados Oracle 12c Enterprise Edition e uma imagem do PHP 8.2 CLI usando Docker e Docker Compose.
 
-## About Laravel
+## Instalação
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Faça o Fork deste repositório (Página principal do repo, botão Fork), alterando o nome para ```NOME-DO-SEU-PROJETO LARAVEL ENVIRONMENT``` e o path para ```<nome-do-seu-projeto>```. 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Clone em sua máquina o repositório que você forkou.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+git clone <url-do-repo-que-você-forkou>
+```
+- Entre na pasta criada
+```bash
+cd <nome-do-seu-projeto>
+```
 
-## Learning Laravel
+## Pré-requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- Um cliente SQL como [SQL Developer](https://www.oracle.com/tools/downloads/sqldev-downloads.html), [DBeaver](https://dbeaver.io/) ou [SQLTools no VSCode](https://marketplace.visualstudio.com/items?itemName=mtxr.sqltools)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📦 Imagens Docker Necessárias
 
-## Laravel Sponsors
+Antes de subir o ambiente, baixe as imagens necessárias:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+docker pull adordm/oracle-database-enterprise:12.2.0.1-slim
+docker pull php:8.2-cli
+```
 
-### Premium Partners
+Esses comandos irão baixar as imagens:
+- **Oracle Database 12.2.0.1 (slim)**: versão leve do banco Oracle Enterprise.
+- **PHP 8.2 CLI**: para executar scripts e testes em linha de comando com PHP.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
 
-## Contributing
+## 🚀 Subindo o Ambiente
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Execute o seguinte comando para iniciar os contêineres em segundo plano:
+```bash
+docker compose build
+docker compose up
+```
+Esse comando irá:
+- Criar e iniciar os containers definidos no docker-compose.yml.
+- Iniciar o banco de dados Oracle em segundo plano.
 
-## Code of Conduct
+## 🔐 Acessando o Banco de Dados Oracle
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Para acessar o container do banco Oracle e definir uma senha para o sys
+```bash
+docker exec -it oracle_db bash
+sqlplus / as sysdba
+ALTER USER system IDENTIFIED BY oracle;
+```
+## 🧩 Conectando via DBeaver ou outro cliente SQL
 
-## Security Vulnerabilities
+Após subir o ambiente e garantir que o banco está ativo, conecte-se ao Oracle usando as credenciais abaixo:
+- **Host**: localhost
+- **Porta**: 1521
+- **DB Name**: ORCLDB.localdomain
+- **Usuário**: system
+- **Senha**: oracle
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+## 📝 Notas
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+A primeira inicialização do banco Oracle pode levar alguns minutos até que ele esteja totalmente disponível.
+Verifique os logs com:
+```bash
+docker logs -f oracle_db
+```
+
+🛠️ Possíveis Comandos Úteis
+
+- Parar os containers:
+```bash
+docker compose down
+```
+- Verificar se o banco está "ready":
+```bash
+docker exec -it oracle_db tail -f /opt/oracle/alert.log
+```

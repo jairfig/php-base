@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # container_name: app
     ports:
       - "8000:8000"
     environment:
@@ -16,17 +15,14 @@ services:
       DB_DATABASE: laravel
       DB_USERNAME: laravel
       DB_PASSWORD: secret
-
       # Locale da aplicação (novo)
       APP_LOCALE: pt_BR
       APP_FALLBACK_LOCALE: pt_BR
       APP_FAKER_LOCALE: pt_BR
-
       # (Opcional) Fuso horário e locale do SO dentro do container
       TZ: America/Rio_Branco
       LANG: pt_BR.UTF-8
       LC_ALL: pt_BR.UTF-8
-
       COMPOSER_MEMORY_LIMIT: -1
     volumes:
       - ./:/var/www/html
@@ -34,9 +30,18 @@ services:
       db:
         condition: service_healthy
 
+  oracle:
+    image: adordm/oracle-database-enterprise:12.2.0.1-slim
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PWD=oracle
+      - ORACLE_CHARACTERSET=AL32UTF8
+      - ORACLE_ALLOW_REMOTE=true
+  # https://medium.com/xp-inc/dica-r%C3%A1pida-criando-base-de-dados-oracle-vers%C3%A3o-21-3-0-no-docker-357b05754b84
+
   db:
     image: mysql:5.7
-    # container_name: projeto-db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: laravel
@@ -54,36 +59,3 @@ services:
 
 volumes:
   db_data:
-
-# services:
-#   web:
-#     image: app-name:latest
-#     build:
-#       target: web
-#       context: .
-#     env_file:
-#       - .env
-#     ports:
-#       - "8000:80"
-#     volumes:
-#       - .:/var/www/html
-#     depends_on:
-#       - db
-  
-#   db:
-#     platform: "linux/amd64"
-#     image: mysql:5.7
-#     env_file:
-#       - .env
-#     environment:
-#       MYSQL_ROOT_PASSWORD: root
-#       MYSQL_DATABASE: ${DB_DATABASE}
-#       MYSQL_USER: ${DB_USERNAME}
-#       MYSQL_PASSWORD: ${DB_PASSWORD}
-#     ports:
-#       - "3306:3306"
-#     volumes:
-#       - dbdata:/var/lib/mysql
-
-# volumes:
-#   dbdata:
