@@ -2,32 +2,15 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/php/Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: laravel
-      DB_USERNAME: laravel
-      DB_PASSWORD: secret
-      # Locale da aplicação (novo)
-      APP_LOCALE: pt_BR
-      APP_FALLBACK_LOCALE: pt_BR
-      APP_FAKER_LOCALE: pt_BR
-      # (Opcional) Fuso horário e locale do SO dentro do container
-      TZ: America/Rio_Branco
-      LANG: pt_BR.UTF-8
-      LC_ALL: pt_BR.UTF-8
-      COMPOSER_MEMORY_LIMIT: -1
+    env_file:
+      - .env
     volumes:
       - ./:/var/www/html
     depends_on:
-      db:
+      oracle:
         condition: service_healthy
 
   oracle:
@@ -40,22 +23,22 @@ services:
       - ORACLE_ALLOW_REMOTE=true
   # https://medium.com/xp-inc/dica-r%C3%A1pida-criando-base-de-dados-oracle-vers%C3%A3o-21-3-0-no-docker-357b05754b84
 
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -uroot -p$${MYSQL_ROOT_PASSWORD} -h 127.0.0.1 --silent"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+#   db:
+#     image: mysql:5.7
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: laravel
+#       MYSQL_USER: laravel
+#       MYSQL_PASSWORD: secret
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - db_data:/var/lib/mysql
+#     healthcheck:
+#       test: ["CMD-SHELL", "mysqladmin ping -uroot -p$${MYSQL_ROOT_PASSWORD} -h 127.0.0.1 --silent"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 10
 
-volumes:
-  db_data:
+# volumes:
+#   db_data:
