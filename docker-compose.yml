@@ -1,32 +1,78 @@
 services:
-  web:
-    image: app-name:latest
+  app:
     build:
-      target: web
       context: .
-    env_file:
-      - .env
+      dockerfile: Dockerfile
+    # container_name: app
     ports:
-      - "8000:80"
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: laravel
+      DB_PASSWORD: secret
+      COMPOSER_MEMORY_LIMIT: -1
     volumes:
-      - .:/var/www/html
+      - ./:/var/www/html
     depends_on:
-      - db
-  
+      db:
+        condition: service_healthy
+
   db:
-    platform: "linux/amd64"
     image: mysql:5.7
-    env_file:
-      - .env
+    # container_name: projeto-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
     ports:
       - "3306:3306"
     volumes:
-      - dbdata:/var/lib/mysql
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p$${MYSQL_ROOT_PASSWORD} -h 127.0.0.1 --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
-  dbdata:
+  db_data:
+
+# services:
+#   web:
+#     image: app-name:latest
+#     build:
+#       target: web
+#       context: .
+#     env_file:
+#       - .env
+#     ports:
+#       - "8000:80"
+#     volumes:
+#       - .:/var/www/html
+#     depends_on:
+#       - db
+  
+#   db:
+#     platform: "linux/amd64"
+#     image: mysql:5.7
+#     env_file:
+#       - .env
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#       MYSQL_DATABASE: ${DB_DATABASE}
+#       MYSQL_USER: ${DB_USERNAME}
+#       MYSQL_PASSWORD: ${DB_PASSWORD}
+#     ports:
+#       - "3306:3306"
+#     volumes:
+#       - dbdata:/var/lib/mysql
+
+# volumes:
+#   dbdata:
