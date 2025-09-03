@@ -20,6 +20,16 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Composer (do container oficial)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+ENV LANG=pt_BR.UTF-8 \
+    LC_ALL=pt_BR.UTF-8 \
+    LANGUAGE=pt_BR:pt \
+    TZ=America/Rio_Branco \
+    APP_LOCALE=pt_BR \
+    APP_FALLBACK_LOCALE=pt_BR \
+    APP_FAKER_LOCALE=pt_BR
+
+RUN echo "date.timezone=${TZ}" > /usr/local/etc/php/conf.d/zz-timezone.ini
+
 WORKDIR /var/www/html
 
 # Entrypoint

@@ -16,6 +16,17 @@ services:
       DB_DATABASE: laravel
       DB_USERNAME: laravel
       DB_PASSWORD: secret
+
+      # Locale da aplicação (novo)
+      APP_LOCALE: pt_BR
+      APP_FALLBACK_LOCALE: pt_BR
+      APP_FAKER_LOCALE: pt_BR
+
+      # (Opcional) Fuso horário e locale do SO dentro do container
+      TZ: America/Rio_Branco
+      LANG: pt_BR.UTF-8
+      LC_ALL: pt_BR.UTF-8
+
       COMPOSER_MEMORY_LIMIT: -1
     volumes:
       - ./:/var/www/html

@@ -46,6 +46,10 @@ set_env "DB_DATABASE"   "${DB_DATABASE:-laravel}"
 set_env "DB_USERNAME"   "${DB_USERNAME:-laravel}"
 set_env "DB_PASSWORD"   "${DB_PASSWORD:-secret}"
 
+set_env "APP_LOCALE"     "${APP_LOCALE:-pt_BR}"
+set_env "APP_FALLBACK_LOCALE" "${APP_FALLBACK_LOCALE:-pt_BR}"
+set_env "APP_FAKER_LOCALE" "${APP_FAKER_LOCALE:-pt_BR}"
+
 # 4) Gera APP_KEY, se necessário
 if ! grep -q "^APP_KEY=base64" .env; then
   echo "🔑 Gerando APP_KEY…"
